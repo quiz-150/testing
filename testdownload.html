@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BlueNebula Gateway</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(180deg, #030a18, #071a33);
+  color: white;
+  height: 100vh;
+  display: flex;
+}
+
+/* Sidebar Tabs */
+#sidebar {
+  width: 200px;
+  background: #061428;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+#tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.tab {
+  padding: 10px;
+  background: #0d2a52;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+  word-wrap: break-word;
+}
+
+.tab.active {
+  background: #1e56a0;
+}
+
+.tab:hover {
+  background: #18407a;
+}
+
+#addTab {
+  margin-top: 10px;
+  background: #1e56a0;
+  border: none;
+  color: white;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Main Area */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Top URL Bar */
+#topBar {
+  background: #081a33;
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+#urlInput {
+  width: 60%;
+  max-width: 600px;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  background: #0d2a52;
+  color: white;
+  font-size: 16px;
+}
+
+#goButton {
+  margin-left: 10px;
+  background: #1e56a0;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Home Screen */
+#homeScreen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#logo {
+  font-size: 42px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #3aa0ff, #6ec6ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+}
+
+/* Viewer */
+#viewer {
+  flex: 1;
+  border: none;
+  width: 100%;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="sidebar">
+  <div id="tabs"></div>
+  <button id="addTab" onclick="addTab()">+ New Tab</button>
+</div>
+
+<div id="main">
+  <div id="topBar">
+    <input id="urlInput" placeholder="Enter destination URL">
+    <button id="goButton" onclick="loadPage()">Launch</button>
+  </div>
+
+  <div id="homeScreen">
+    <div id="logo">BlueNebula</div>
+  </div>
+
+  <iframe id="viewer"></iframe>
+</div>
+
+<script>
+const BACKEND_URL = "https://bn-server-exu0.onrender.com/proxy";
+
+let tabs = [];
+let currentTab = null;
+
+function addTab() {
+  const id = Date.now();
+  tabs.push({ id, url: null });
+  currentTab = id;
+  renderTabs();
+  showHome();
+}
+
+function renderTabs() {
+  const tabsDiv = document.getElementById("tabs");
+  tabsDiv.innerHTML = "";
+
+  tabs.forEach((tab, index) => {
+    const div = document.createElement("div");
+    div.className = "tab" + (tab.id === currentTab ? " active" : "");
+    div.innerText = tab.url ? "Tab " + (index + 1) : "New Tab";
+    div.onclick = () => switchTab(tab.id);
+    tabsDiv.appendChild(div);
+  });
+}
+
+function switchTab(id) {
+  currentTab = id;
+  const tab = tabs.find(t => t.id === id);
+
+  if (!tab.url) {
+    showHome();
+  } else {
+    showViewer(tab.url);
+  }
+
+  renderTabs();
+}
+
+function showHome() {
+  document.getElementById("viewer").style.display = "none";
+  document.getElementById("homeScreen").style.display = "flex";
+  document.getElementById("urlInput").value = "";
+}
+
+function showViewer(url) {
+  document.getElementById("homeScreen").style.display = "none";
+  document.getElementById("viewer").style.display = "block";
+  document.getElementById("viewer").src = url;
+}
+
+function loadPage() {
+  let url = document.getElementById("urlInput").value.trim();
+  if (!url) return;
+
+  // Connect to your backend Render proxy
+  const proxyURL = `${BACKEND_URL}?url=${encodeURIComponent(url)}`;
+
+  const tab = tabs.find(t => t.id === currentTab);
+  tab.url = proxyURL;
+
+  showViewer(proxyURL);
+  renderTabs();
+}
+
+// Initialize with a first tab
+addTab();
+</script>
+
+</body>
+</html>
