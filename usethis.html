@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>BlueNebula</title>
+  <link href="https://cdn.jsdelivr.net/npm/fredoka-one@1.0.0/css/fredoka-one.min.css" rel="stylesheet">
+  <!-- Load Lucide -->
+  <script type="module">
+    import * as lucide from 'https://cdn.jsdelivr.net/npm/lucide@0.258.0/dist/lucide.esm.min.js';
+    window.lucide = lucide;
+  </script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Fredoka One', Arial, sans-serif;
+      background: linear-gradient(135deg, #030a18, #0d1f3d);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 10px 20px;
+      position: relative;
+    }
+
+    .logo {
+      font-size: 48px;
+      font-weight: bold;
+      letter-spacing: -5px;
+    }
+
+    .help-button {
+      font-size: 10px;
+      padding: 5px 10px;
+      background-color: #1f2e50;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      margin-top: 5px;
+    }
+
+    .url-bar {
+      margin-top: 20px;
+      display: flex;
+      width: 80%;
+      max-width: 800px;
+    }
+
+    .url-bar input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px 0 0 6px;
+      border: none;
+      outline: none;
+    }
+
+    .url-bar button {
+      padding: 10px 16px;
+      font-size: 16px;
+      border: none;
+      background-color: #1f2e50;
+      color: white;
+      cursor: pointer;
+    }
+
+    .fullscreen-button {
+      border-radius: 0 6px 6px 0;
+      margin-left: 2px;
+    }
+
+    iframe {
+      margin-top: 20px;
+      width: 90%;
+      height: 70vh;
+      border: none;
+      border-radius: 6px;
+      background-color: white;
+    }
+
+    .discord-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #7289da;
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">BlueNebula</div>
+    <!-- Discord icon top-right -->
+    <button class="discord-button" onclick="window.open(DISCORD_URL, '_blank')">
+      <i data-lucide="discord"></i>
+    </button>
+  </header>
+
+  <button class="help-button" onclick="loadTroubleshoot()">Need Help: Click Me</button>
+
+  <div class="url-bar">
+    <input type="text" id="urlInput" placeholder="Enter URL here">
+    <button onclick="loadURL()">Go</button>
+    <button class="fullscreen-button" onclick="toggleFullscreen()">⛶</button>
+  </div>
+
+  <iframe id="browserFrame" src=""></iframe>
+
+  <script>
+    const BACKEND_URL = "https://bn-server-exu0.onrender.com";
+    const DISCORD_URL = "https://discord.com/invite/ybvUQVXdFU";
+    const SWITCH_MSG = "The BlueNebula server didn’t respond, switching over to the Voltz servers";
+    const VOLTZ_FAIL_MSG = "The Voltz servers failed please try again soon";
+    const CRASH_MSG = "Both the BlueNebula and Voltz servers have failed. Try again later";
+
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.lucide) window.lucide.createIcons();
+    });
+
+    function loadURL() {
+      const input = document.getElementById('urlInput').value.trim();
+      const iframe = document.getElementById('browserFrame');
+      if (!input) return;
+
+      // /discord shortcut
+      if (input.toLowerCase() === "/discord") {
+        window.open(DISCORD_URL, "_blank");
+        return;
+      }
+
+      // Step 1: Load the primary proxy
+      iframe.src = `${BACKEND_URL}/proxy?url=${encodeURIComponent(input)}`;
+    }
+
+    function loadTroubleshoot() {
+      const iframe = document.getElementById('browserFrame');
+      iframe.src = 'https://officialbluenebula.github.io/admin/troubleshoot';
+    }
+
+    function toggleFullscreen() {
+      const iframe = document.getElementById('browserFrame');
+      if (!document.fullscreenElement) {
+        iframe.requestFullscreen().catch(err => console.error(err));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // Optional: show switching messages inside iframe dynamically
+    // This requires server to write messages in stream. Our current backend writes the HTML message immediately.
+    // The iframe will render the first message while fetching fallback.
+  </script>
+</body>
+</html>
