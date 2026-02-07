@@ -1,214 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>BlueNebula</title>
-  <link href="https://cdn.jsdelivr.net/npm/fredoka-one@1.0.0/css/fredoka-one.min.css" rel="stylesheet">
-  <!-- Load Lucide icons -->
-  <script type="module">
-    import * as lucide from 'https://cdn.jsdelivr.net/npm/lucide@0.258.0/dist/lucide.esm.min.js';
-    window.lucide = lucide;
-  </script>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Fredoka One', Arial, sans-serif;
-      background: linear-gradient(135deg, #030a18, #0d1f3d);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      position: relative;
-    }
+<meta charset="UTF-8">
+<title>BlueNebula</title>
 
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding: 10px 20px;
-      position: relative;
-      z-index: 10;
-    }
+<script src="https://unpkg.com/lucide@latest"></script>
 
-    .logo {
-      font-size: 48px;
-      font-weight: bold;
-      letter-spacing: -5px;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#020817,#0b1e3a);
+  color: white;
+  text-align: center;
+}
 
-    .help-button {
-      font-size: 10px;
-      padding: 5px 10px;
-      background-color: #1f2e50;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-      margin-top: 5px;
-    }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+}
 
-    .url-bar {
-      margin-top: 20px;
-      display: flex;
-      width: 80%;
-      max-width: 800px;
-      z-index: 10;
-      position: relative;
-    }
+.logo {
+  font-size: 48px;
+  font-weight: bold;
+}
 
-    .url-bar input {
-      flex: 1;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 6px 0 0 6px;
-      border: none;
-      outline: none;
-    }
+#discordBtn {
+  background: none;
+  border: none;
+  color: #7289da;
+  cursor: pointer;
+}
 
-    .url-bar button {
-      padding: 10px 16px;
-      font-size: 16px;
-      border: none;
-      background-color: #1f2e50;
-      color: white;
-      cursor: pointer;
-    }
+.url-bar {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}
 
-    .fullscreen-button {
-      border-radius: 0 6px 6px 0;
-      margin-left: 2px;
-    }
+.url-bar input {
+  width: 50%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px 0 0 6px;
+  border: none;
+  outline: none;
+}
 
-    iframe {
-      margin-top: 20px;
-      width: 90%;
-      height: 70vh;
-      border: none;
-      border-radius: 6px;
-      background-color: white;
-      transition: filter 0.3s ease;
-    }
+.url-bar button {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: none;
+  background: #162a4f;
+  color: white;
+  cursor: pointer;
+}
 
-    .discord-button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #7289da;
-      font-size: 32px;
-      display: flex;
-      align-items: center;
-    }
+#fullscreenBtn {
+  border-radius: 0 6px 6px 0;
+}
 
-    /* Error overlay */
-    #errorOverlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.6);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      z-index: 1000;
-      pointer-events: none;
-    }
+iframe {
+  margin-top: 20px;
+  width: 95%;
+  height: 70vh;
+  border: none;
+  border-radius: 8px;
+  background: white;
+}
 
-    #errorMessage {
-      color: white;
-      font-size: 24px;
-      text-shadow: 0 0 5px #00f, 0 0 10px #00f, 0 0 20px #00f;
-      font-family: 'Fredoka One', Arial, sans-serif;
-      max-width: 90%;
-    }
-
-  </style>
+.controls {
+  margin-top: 15px;
+}
+select, .applyBtn {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+}
+.applyBtn {
+  background: #162a4f;
+  color: white;
+  cursor: pointer;
+}
+</style>
 </head>
+
 <body>
-  <header>
-    <div class="logo">BlueNebula</div>
-    <!-- Discord icon -->
-    <button class="discord-button" onclick="window.open(DISCORD_URL, '_blank')">
-      <i data-lucide="discord"></i>
-    </button>
-  </header>
 
-  <button class="help-button" onclick="loadTroubleshoot()">Need Help: Click Me</button>
+<header>
+  <div class="logo">BlueNebula</div>
+  <button id="discordBtn">
+    <i data-lucide="discord"></i>
+  </button>
+</header>
 
-  <div class="url-bar">
-    <input type="text" id="urlInput" placeholder="Enter URL here">
-    <button onclick="loadURL()">Go</button>
-    <button class="fullscreen-button" onclick="toggleFullscreen()">⛶</button>
-  </div>
+<div class="url-bar">
+  <input type="text" id="urlInput" placeholder="Enter URL here">
+  <button id="goBtn">Go</button>
+  <button id="fullscreenBtn">⛶</button>
+</div>
 
-  <iframe id="browserFrame" src=""></iframe>
-  <div id="errorOverlay">
-    <div id="errorMessage"></div>
-  </div>
+<iframe id="browserFrame" sandbox="allow-scripts"></iframe>
 
-  <script>
-    const BACKEND_URL = "https://bn-server-exu0.onrender.com";
-    const DISCORD_URL = "https://discord.com/invite/ybvUQVXdFU";
-    const SWITCH_MSG = "The BlueNebula server didn’t respond, switching over to the Voltz servers";
-    const VOLTZ_FAIL_MSG = "The Voltz servers failed please try again soon";
-    const CRASH_MSG = "Both the BlueNebula and Voltz servers have failed. Try again later";
+<div class="controls">
+  <select id="methodSelect">
+    <option value="proxy">BlueNebula Proxy</option>
+    <option value="urlfinder">UrlFinder Method</option>
+  </select>
+  <button class="applyBtn" id="applyBtn">Apply</button>
+</div>
 
-    window.addEventListener("DOMContentLoaded", () => {
-      if (window.lucide) window.lucide.createIcons();
-    });
+<script>
+const BACKEND_URL = "https://bn-server-exu0.onrender.com";
+const DISCORD_URL = "https://discord.com/invite/ybvUQVXdFU";
 
-    function showError(message) {
-      const overlay = document.getElementById('errorOverlay');
-      const errorMsg = document.getElementById('errorMessage');
-      const iframe = document.getElementById('browserFrame');
+const iframe = document.getElementById("browserFrame");
+const urlInput = document.getElementById("urlInput");
+const methodSelect = document.getElementById("methodSelect");
 
-      iframe.style.filter = 'blur(3px) brightness(0.5)';
-      errorMsg.textContent = message;
-      overlay.style.display = 'flex';
+let currentMethod = "proxy";
+
+lucide.createIcons();
+
+function normalizeURL(input) {
+  if (!input.startsWith("http://") && !input.startsWith("https://")) {
+    return "https://www.bing.com/search?q=" + encodeURIComponent(input);
+  }
+  return input;
+}
+
+async function loadURL() {
+  let input = urlInput.value.trim();
+  if (!input) return;
+
+  if (input === "/discord") {
+    window.open(DISCORD_URL, "_blank");
+    return;
+  }
+
+  const finalURL = normalizeURL(input);
+
+  if (currentMethod === "proxy") {
+    iframe.removeAttribute("srcdoc");
+    iframe.src = BACKEND_URL + "/proxy?url=" + encodeURIComponent(finalURL);
+  }
+
+  if (currentMethod === "urlfinder") {
+    try {
+      const response = await fetch(finalURL);
+      let text = await response.text();
+
+      // Add base tag so relative CSS/JS works
+      text = text.replace(/<head>/i, '<head><base href="' + finalURL + '">');
+
+      const blob = new Blob([text], { type: "text/html" });
+      const blobUrl = URL.createObjectURL(blob);
+
+      iframe.src = blobUrl;
+
+    } catch (error) {
+      iframe.srcdoc = "<h2 style='color:white;background:#020817;padding-top:50px;font-family:Arial;'>Error loading page</h2>";
     }
+  }
+}
 
-    function hideError() {
-      const overlay = document.getElementById('errorOverlay');
-      const iframe = document.getElementById('browserFrame');
-      overlay.style.display = 'none';
-      iframe.style.filter = 'none';
-    }
+document.getElementById("goBtn").addEventListener("click", loadURL);
 
-    function loadURL() {
-      const input = document.getElementById('urlInput').value.trim();
-      const iframe = document.getElementById('browserFrame');
-      hideError();
-      if (!input) return;
+document.getElementById("applyBtn").addEventListener("click", () => {
+  currentMethod = methodSelect.value;
+  loadURL();
+});
 
-      if (input.toLowerCase() === "/discord") {
-        window.open(DISCORD_URL, "_blank");
-        return;
-      }
+document.getElementById("fullscreenBtn").addEventListener("click", () => {
+  if (!document.fullscreenElement) {
+    iframe.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen();
+  }
+});
 
-      // Load iframe pointing to backend proxy
-      iframe.src = `${BACKEND_URL}/proxy?url=${encodeURIComponent(input)}`;
+document.getElementById("discordBtn").addEventListener("click", () => {
+  window.open(DISCORD_URL, "_blank");
+});
+</script>
 
-      // Listen for backend errors via messages (optional)
-      // If you implement postMessage from backend, you can trigger showError
-    }
-
-    function loadTroubleshoot() {
-      const iframe = document.getElementById('browserFrame');
-      hideError();
-      iframe.src = 'https://officialbluenebula.github.io/admin/troubleshoot';
-    }
-
-    function toggleFullscreen() {
-      const iframe = document.getElementById('browserFrame');
-      if (!document.fullscreenElement) {
-        iframe.requestFullscreen().catch(err => console.error(err));
-      } else {
-        document.exitFullscreen();
-      }
-    }
-  </script>
 </body>
 </html>
