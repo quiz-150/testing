@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>BlueNebula</title>
   <link href="https://cdn.jsdelivr.net/npm/fredoka-one@1.0.0/css/fredoka-one.min.css" rel="stylesheet">
-  <!-- Load Lucide -->
+  <!-- Load Lucide icons -->
   <script type="module">
     import * as lucide from 'https://cdn.jsdelivr.net/npm/lucide@0.258.0/dist/lucide.esm.min.js';
     window.lucide = lucide;
@@ -19,6 +19,7 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      position: relative;
     }
 
     header {
@@ -28,6 +29,7 @@
       width: 100%;
       padding: 10px 20px;
       position: relative;
+      z-index: 10;
     }
 
     .logo {
@@ -52,6 +54,8 @@
       display: flex;
       width: 80%;
       max-width: 800px;
+      z-index: 10;
+      position: relative;
     }
 
     .url-bar input {
@@ -84,6 +88,7 @@
       border: none;
       border-radius: 6px;
       background-color: white;
+      transition: filter 0.3s ease;
     }
 
     .discord-button {
@@ -95,12 +100,37 @@
       display: flex;
       align-items: center;
     }
+
+    /* Error overlay */
+    #errorOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    #errorMessage {
+      color: white;
+      font-size: 24px;
+      text-shadow: 0 0 5px #00f, 0 0 10px #00f, 0 0 20px #00f;
+      font-family: 'Fredoka One', Arial, sans-serif;
+      max-width: 90%;
+    }
+
   </style>
 </head>
 <body>
   <header>
     <div class="logo">BlueNebula</div>
-    <!-- Discord icon top-right -->
+    <!-- Discord icon -->
     <button class="discord-button" onclick="window.open(DISCORD_URL, '_blank')">
       <i data-lucide="discord"></i>
     </button>
@@ -115,6 +145,9 @@
   </div>
 
   <iframe id="browserFrame" src=""></iframe>
+  <div id="errorOverlay">
+    <div id="errorMessage"></div>
+  </div>
 
   <script>
     const BACKEND_URL = "https://bn-server-exu0.onrender.com";
@@ -127,23 +160,44 @@
       if (window.lucide) window.lucide.createIcons();
     });
 
+    function showError(message) {
+      const overlay = document.getElementById('errorOverlay');
+      const errorMsg = document.getElementById('errorMessage');
+      const iframe = document.getElementById('browserFrame');
+
+      iframe.style.filter = 'blur(3px) brightness(0.5)';
+      errorMsg.textContent = message;
+      overlay.style.display = 'flex';
+    }
+
+    function hideError() {
+      const overlay = document.getElementById('errorOverlay');
+      const iframe = document.getElementById('browserFrame');
+      overlay.style.display = 'none';
+      iframe.style.filter = 'none';
+    }
+
     function loadURL() {
       const input = document.getElementById('urlInput').value.trim();
       const iframe = document.getElementById('browserFrame');
+      hideError();
       if (!input) return;
 
-      // /discord shortcut
       if (input.toLowerCase() === "/discord") {
         window.open(DISCORD_URL, "_blank");
         return;
       }
 
-      // Step 1: Load the primary proxy
+      // Load iframe pointing to backend proxy
       iframe.src = `${BACKEND_URL}/proxy?url=${encodeURIComponent(input)}`;
+
+      // Listen for backend errors via messages (optional)
+      // If you implement postMessage from backend, you can trigger showError
     }
 
     function loadTroubleshoot() {
       const iframe = document.getElementById('browserFrame');
+      hideError();
       iframe.src = 'https://officialbluenebula.github.io/admin/troubleshoot';
     }
 
@@ -155,10 +209,6 @@
         document.exitFullscreen();
       }
     }
-
-    // Optional: show switching messages inside iframe dynamically
-    // This requires server to write messages in stream. Our current backend writes the HTML message immediately.
-    // The iframe will render the first message while fetching fallback.
   </script>
 </body>
 </html>
