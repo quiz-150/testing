@@ -74,11 +74,13 @@ iframe {
 .controls {
   margin-top: 15px;
 }
+
 select, .applyBtn {
   padding: 6px 10px;
   border-radius: 6px;
   border: none;
 }
+
 .applyBtn {
   background: #162a4f;
   color: white;
@@ -102,7 +104,7 @@ select, .applyBtn {
   <button id="fullscreenBtn">⛶</button>
 </div>
 
-<iframe id="browserFrame" sandbox="allow-scripts"></iframe>
+<iframe id="browserFrame" sandbox="allow-scripts allow-forms allow-same-origin"></iframe>
 
 <div class="controls">
   <select id="methodSelect">
@@ -113,7 +115,7 @@ select, .applyBtn {
 </div>
 
 <script>
-const BACKEND_URL = "https://bn-server-exu0.onrender.com";
+const BACKEND_URL = "https://bnserverofficial.netlify.app/.netlify/functions/proxy";
 const DISCORD_URL = "https://discord.com/invite/ybvUQVXdFU";
 
 const iframe = document.getElementById("browserFrame");
@@ -125,10 +127,17 @@ let currentMethod = "proxy";
 lucide.createIcons();
 
 function normalizeURL(input) {
-  if (!input.startsWith("http://") && !input.startsWith("https://")) {
-    return "https://www.bing.com/search?q=" + encodeURIComponent(input);
+  input = input.trim();
+
+  if (input.startsWith("http://") || input.startsWith("https://")) {
+    return input;
   }
-  return input;
+
+  if (input.includes(".")) {
+    return "https://" + input;
+  }
+
+  return "https://www.bing.com/search?q=" + encodeURIComponent(input);
 }
 
 async function loadURL() {
@@ -144,7 +153,7 @@ async function loadURL() {
 
   if (currentMethod === "proxy") {
     iframe.removeAttribute("srcdoc");
-    iframe.src = BACKEND_URL + "/proxy?url=" + encodeURIComponent(finalURL);
+    iframe.src = BACKEND_URL + "?url=" + encodeURIComponent(finalURL);
   }
 
   if (currentMethod === "urlfinder") {
@@ -152,7 +161,6 @@ async function loadURL() {
       const response = await fetch(finalURL);
       let text = await response.text();
 
-      // Add base tag so relative CSS/JS works
       text = text.replace(/<head>/i, '<head><base href="' + finalURL + '">');
 
       const blob = new Blob([text], { type: "text/html" });
